@@ -1,5 +1,19 @@
-Feature: Search a course
-    Scenario: Should search by text
-        Given user is on "/navigation" page
-        When user search by "тестировщик"
-        Then user sees the course suggested "Тестировщик ПО"
+Feature: Cinema web test
+  Scenario: Фильм 'Сталкер' 14.12
+    Given пользователь переходит на страницу "https://qamid.tmweb.ru/client/index.php"
+    When пользователь выбирает дату "14.12"
+    And пользователь выбирает сеанс "217"
+    Then пользователь должен увидеть сообщение "Вы выбрали билеты:"
+
+  Scenario: Бронируем билеты на 'Микки Маус'
+    Given пользователь переходит на страницу "https://qamid.tmweb.ru/client/index.php"
+    When пользователь выбирает дату "14.12"
+    And пользователь выбирает сеанс "199"
+    And пользователь нажимает кнопку "Забронировать"
+    Then пользователь должен увидеть сообщение "Вы выбрали билеты:"
+
+  Scenario: Без выбора места, нельзя забронировать билет
+    Given пользователь переходит на страницу "https://qamid.tmweb.ru/client/index.php"
+    When пользователь выбирает дату "14.12"
+    And пользователь выбирает сеанс "217"
+    Then кнопка "Забронировать" должна быть отключена

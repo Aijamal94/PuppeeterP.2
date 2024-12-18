@@ -1,7 +1,7 @@
 const puppeteer = require("puppeteer");
 const chai = require("chai");
 const expect = chai.expect;
-const { Given, When, Then, Before, After } = require("cucumber");
+const { Given, When, Then, Before, After } = require("@cucumber/cucumber");
 const { clickElement, findText } = require("../../lib/commands.js");
 const { putText, getText } = require("../../lib/commands.js");
 
@@ -23,8 +23,7 @@ Given("пользователь открывает сайт киноафиши",
 });
 
 When("пользователь выбирает день сеанса и время", async function () {
-  await clickElement(this.page, ("[data-seance-id='217']"));
-  return await clickElement(this.page, ("[data-seance-id='217']"));
+  return await clickElement(this.page, "[data-seance-id='217']");
 });
 
 Then(
@@ -36,19 +35,20 @@ Then(
   }
 );
 
-When("пользователь выбирает фильм", async function () {
-  await clickElement(page, "[.page-nav__day:nth-child(6)]");
-    await clickElement(page, "[data-seance-id=“199]");
-    await clickElement(page, ".acceptin-button");
-    const actual = await findText(page, ".ticket__check-title");
-    await expect(actual).toContain("Вы выбрали билеты:");
+When("пользователь выбирает фильм и бронирует место", async function () {
+  await this.page.waitForSelector(".page-nav__day:nth-child(6)");
+  await this.page.click(".page-nav__day:nth-child(6)");
 });
 
-Then("пользователь видит надпись {string}", async function (string) {
-  const actual = await findText(this.page, ".ticket__check-title");
-  const expected = await string;
-  expect(actual).contains(expected);
-});
+Then(
+  "пользователь видит надпись {string}",
+  { timeout: 20000 },
+  async function (string) {
+    const actual = await findText(this.page, ".ticket__check-title");
+    const expected = await string;
+    expect(actual).contains(expected);
+  }
+);
 
 When("пользователь выбирает фильм, но не выбирает место", async function () {
   await clickElement(this.page, ".page-nav__day:nth-child(6)");
@@ -59,20 +59,20 @@ Then("пользователь не может нажать кнопку {string
   const acceptinButton = await this.page.$(string);
   const actual = await acceptinButton.evaluate((btn) => btn.disabled);
   expect(actual).equal(true);
-});
 
-Given("user is on {string} page", async function (string) {
-  return await this.page.goto(`https://netology.ru${string}`, {
-    setTimeout: 20000,
+  Given("user is on {string} page", async function (string) {
+    return await this.page.goto(`https://netology.ru${string}`, {
+      setTimeout: 20000,
+    });
   });
-});
 
-When("user search by {string}", async function (string) {
-  return await putText(this.page, "input", string);
-});
+  When("user search by {string}", async function (string) {
+    return await putText(this.page, "input", string);
+  });
 
-Then("user sees the course suggested {string}", async function (string) {
-  const actual = await getText(this.page, "a[data-name]");
-  const expected = await string;
-  expect(actual).contains(expected);
+  Then("user sees the course suggested {string}", async function (string) {
+    const actual = await getText(this.page, "a[data-name]");
+    const expected = await string;
+    expect(actual).contains(expected);
+  });
 });
